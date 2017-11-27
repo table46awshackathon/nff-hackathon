@@ -1,31 +1,43 @@
 <html>
 <head>
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
-<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css
-" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+<link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"</script> 
 <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"</script> 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.js"></script>
-
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </head>
 <body>
-
+<h1>Scoresheet and Calculator</h1>
 <div id="jsGrid"></div>
 
 
 <script>
-    var clients = [
-       {"First Name": "First", "Last Name": "Last", "ID": "first.last", "Gender (required)": "M", "Grade (required)": "6", "Age (required)": "10", "Height - Feet": "4", "Height - Inches": "10", "Weight - Pounds": "100", "BMI": "22", "Triceps Skinfold": "Test", "Calf Skinfold": "Test", "Percent Body Fat-Calculated": "Test", "Percent Body Fat-Entered": "Test", "20M PACER Laps": "Test", "15M PACER Laps": "Test", "PACER VO2max": "Test", "Mile Run - Minutes": "Test", "Mile Run - Seconds": "Test", "Mile Run VO2max": "Test", "Walk Test - Minutes": "Test", "Walk Test - Seconds": "Test", "Walk Test - HR (BPM)": "Test", "Walk Test VO2max": "Test", "Curl-up (Number)": "Test", "Trunk Lift (Inches)": "Test", "Push-up (Number)": "Test", "Mod Pull-up (Number)": "Test", "Flexed Arm Hang (Seconds)": "Test", "Sit & Reach L (Inches)": "Test", "Sit & Reach R (Inches)": "Test", "Shoulder Stretch L": "Test", "Shoulder Stretch R" : "Test"}
+    /*var clients = [
+       {"First Name": "First", "Last Name": "Last", "ID": "38798", "Gender (required)": "M", "Grade (required)": "6", "Age (required)": "10", "Height - Feet": "4", "Height - Inches": "10", "Weight - Pounds": "100", "BMI": "22", "Triceps Skinfold": "Test", "Calf Skinfold": "Test", "Percent Body Fat-Calculated": "Test", "Percent Body Fat-Entered": "Test", "20M PACER Laps": "Test", "15M PACER Laps": "Test", "PACER VO2max": "Test", "Mile Run - Minutes": "Test", "Mile Run - Seconds": "Test", "Mile Run VO2max": "Test", "Walk Test - Minutes": "Test", "Walk Test - Seconds": "Test", "Walk Test - HR (BPM)": "Test", "Walk Test VO2max": "Test", "Curl-up (Number)": "Test", "Trunk Lift (Inches)": "Test", "Push-up (Number)": "Test", "Mod Pull-up (Number)": "Test", "Flexed Arm Hang (Seconds)": "Test", "Sit & Reach L (Inches)": "Test", "Sit & Reach R (Inches)": "Test", "Shoulder Stretch L": "Test", "Shoulder Stretch R" : "Test"}
     ];
- 
+	*/
+
+	$.ajax({
+		type: "GET",
+		url: "sample-data.json",
+		dataType: "JSON",
+		success: function (data) {
+			initGrid(data); 
+		}
+	});
+				
     var genders = [
         { Name: "", Id: 0 },
-        { Name: "Male", Id: 1 },
-        { Name: "Female", Id: 2 },
-        { Name: "Not Disclosed", Id: 3 }
+        { Name: "M", Id: 1 },
+        { Name: "F", Id: 2 },
+        { Name: "U", Id: 3 }
     ];
  
+	function initGrid(clients) {
     $("#jsGrid").jsGrid({
         width: "100%",
         height: "400px",
@@ -36,18 +48,29 @@
         paging: true,
  
         data: clients,
+
+        /*autoload: true, 
+        controller: {
+            loadData: function() {
+				return $.ajax({
+					type: "GET",
+					url: "sample-data.json",
+					dataType: "JSON"
+				});
+			}
+		},*/
 		
 		fields: [
-		{ name: "First Name", type: "text", width: 150, validate: "required" },
-		{ name: "Last Name", type: "text", width: 150, validate: "required" },
-		{ name: "ID", type: "text", width: 150, validate: "required" },
+		{ name: "First Name", type: "text", width: 100, validate: "required" },
+		{ name: "Last Name", type: "text", width: 100, validate: "required" },
+		{ name: "ID", type: "number", width: 100, validate: "required" },
 		{ name: "Gender (required)", type: "select", items: genders, valueField: "Id", textField: "Name", validate: "required" },
-		{ name: "Grade (required)", type: "text", width: 150, validate: "required" },
-		{ name: "Age (required)", type: "text", width: 150, validate: "required" },
-		{ name: "Height - Feet", type: "text", width: 150, validate: "required" },
-		{ name: "Height - Inches", type: "text", width: 150, validate: "required" },
-		{ name: "Weight - Pounds", type: "text", width: 150, validate: "required" },
-		{ name: "BMI", type: "text", width: 150, validate: "required" },
+		{ name: "Grade (required)", type: "number", width: 100, validate: "required" },
+		{ name: "Age (required)", type: "number", width: 100, validate: "required" },
+		{ name: "Height - Feet", type: "number", width: 70, validate: "required" },
+		{ name: "Height - Inches", type: "number", width: 70, validate: "required" },
+		{ name: "Weight - Pounds", type: "number", width: 100, validate: "required" },
+		{ name: "BMI", type: "number", width: 100, validate: "required" },
 		{ name: "Triceps Skinfold", type: "text", width: 150, validate: "required" },
 		{ name: "Calf Skinfold", type: "text", width: 150, validate: "required" },
 		{ name: "Percent Body Fat-Calculated", type: "text", width: 150, validate: "required" },
@@ -83,6 +106,7 @@
         ]
 */
     });
+	}
 </script>
 </body>
 </html<
