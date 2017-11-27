@@ -8,6 +8,7 @@
 <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"</script> 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.157.0/aws-sdk.js"></script>
 
 </head>
 <body>
@@ -16,6 +17,21 @@
 
 
 <script>
+	// Initialize the Amazon Cognito credentials provider
+	AWS.config.region = 'us-west-2'; // Region
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+		IdentityPoolId: 'us-west-2:42fe6e8b-5358-4346-ac91-d644d1771dcd',
+	});
+	
+	// Make the call to obtain credentials
+	AWS.config.credentials.get(function(){
+		// Credentials will be available when this function is called.
+		var accessKeyId = AWS.config.credentials.accessKeyId;
+		var secretAccessKey = AWS.config.credentials.secretAccessKey;
+		var sessionToken = AWS.config.credentials.sessionToken;
+		var clientIdentityId = AWS.config.credentials.identityId;
+	});
+	
 	var fieldList = [];
 	
 	$.ajax({
@@ -26,7 +42,7 @@
 			fieldList = fieldData;
 			$.ajax({
 				type: "GET",
-				url: "sample-data.json",
+				url: "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/",
 				dataType: "JSON",
 				success: function (data) {
 					initGrid(data,fieldList); 
@@ -58,7 +74,7 @@
 			loadData: function(filter) {
 				return $.ajax({
                     type: "GET",
-                    url: "sample-data.json",
+                    url: "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/",
                     data: filter
                 });
 			},
