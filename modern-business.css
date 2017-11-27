@@ -15,6 +15,18 @@ body {
     padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
 
+.main {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+}
+
+.logo {
+	height:45px; 
+	float:left;
+	margin-top:2.5px;
+}
+
 .img-portfolio {
     margin-bottom: 30px;
 }
