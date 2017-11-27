@@ -46,10 +46,50 @@
         sorting: true,
         paging: true,
 
+		onItemUpdating: function(args) {
+            console.log(args.item);
+        },
+		
+		onItemUpdated: function(args) {
+            console.log(args.item);
+        },
+		
+		controller: {
+			loadData: function(filter) {
+				return $.ajax({
+                    type: "GET",
+                    url: "sample-data.json",
+                    data: filter
+                });
+			},
+			
+			insertItem: function(item) {
+				return $.ajax({
+					type: "POST",
+					url: "/clients",
+					data: item
+				});
+			},
+			updateItem: function(item) {
+				return $.ajax({
+					type: "PUT",
+					url: "/clients",
+					data: item
+				});
+			},
+			deleteItem: function(item) {
+				return $.ajax({
+					type: "DELETE",
+					url: "/clients",
+					data: item
+				});
+			}
+		},
+		
         data: clients,		
 		fields: fields
     });
 	}
 </script>
 </body>
-</html<
+</html>

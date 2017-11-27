@@ -1,4 +1,6 @@
-[{ "name": "First Name", "type": "text", "width": 100, "validate": "required" },
+[
+{ "type": "control" },
+{ "name": "First Name", "type": "text", "width": 100, "validate": "required" },
 { "name": "Last Name", "type": "text", "width": 100, "validate": "required" },
 { "name": "ID", "type": "number", "width": 100, "validate": "required" },
 { "name": "Gender (required)", "type": "select", "items": [
