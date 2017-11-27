@@ -1,5 +1,6 @@
 <html>
 <head>
+<title>National Fitness Foundation Hackathon - Scoresheets</title>
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
 <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
@@ -29,6 +30,9 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
+					<!--<li>
+                        <a id="loginLink" onclick="showLogin();">Login</a>
+                    </li>-->
                     <li>
                         <a href="scoresheet.html">Scoresheet</a>
                     </li>
@@ -57,7 +61,11 @@
         <div class="row">
             <div class="col-lg-12">
 				<h1>Scoresheet and Calculator</h1>
-				<p>Choose a file to view and edit</p>
+				<p>Choose a file to view and edit. You can also <a id="uploadCsv" onclick="showUpload();">upload a new csv</a></p>
+				<div id="uploadContainer" style="display:none">
+					<input type="file" id="fileupload" />
+					<button id="addphoto" onclick="uploadFile()">Upload File</button>
+				</div>
 				<select id="chooseCsv">
 					<option value="">No Data</option>
 					<option SELECTED value="https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/">Large Data Set (API Gateway)</option>
@@ -84,6 +92,12 @@
 		var clientIdentityId = AWS.config.credentials.identityId;
 	});
 	
+	var uploadBucketName = "table46hackathondata"
+	var s3 = new AWS.S3({
+	  apiVersion: '2006-03-01',
+	  params: {Bucket: uploadBucketName}
+	});
+
 	var fieldList = [];
 	
 	$.ajax({
@@ -121,9 +135,17 @@
 	});
 	
 	function initGrid(clients,fields) {
+	var dynamicHeight = "600px";
+	if (clients.length == 0) {
+		dynamicHeight = "150px";
+	} else if (clients.length < 15) { 
+		dynamicHeight = "400px";
+	} else {
+		dynamicHeight = "600px";
+	}
     $("#jsGrid").jsGrid({
         width: "100%",
-        height: "600px",
+        height: dynamicHeight,
  
         inserting: true,
         editing: true,
@@ -173,6 +195,30 @@
         data: clients,		
 		fields: fields
     });
+	}
+	
+	function showUpload() {
+		$("#uploadContainer").toggle();
+	}
+	
+	function uploadFile() {
+		var files = document.getElementById('fileupload').files;
+		if (!files.length) {
+			return alert('Please choose a file to upload first.');
+		}
+		var file = files[0];
+		var fileName = file.name;
+		
+		s3.upload({
+				Key: fileName,
+				Body: file,
+				ACL: 'public-read'
+			}, function(err, data) {
+			if (err) {
+			  return alert('There was an error uploading your photo: ', err.message);
+			}
+			alert('Successfully uploaded file.');
+	  });
 	}
 </script>
 </body>
