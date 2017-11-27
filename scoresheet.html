@@ -59,7 +59,9 @@
 				<h1>Scoresheet and Calculator</h1>
 				<p>Choose a file to view and edit</p>
 				<select id="chooseCsv">
-					<option value="https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/">Faked Data</option>
+					<option value="">No Data</option>
+					<option SELECTED value="https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/">Large Data Set (API Gateway)</option>
+					<option value="https://s3-us-west-2.amazonaws.com/table46hackathon/small-file.json">Small Data Set (S3)</option>
 				</select>
 				<div id="jsGrid"></div>
 			</div>
@@ -102,6 +104,22 @@
 		error: function(e) {console.log(e);}
 	});
  
+	$("#chooseCsv").change(function() {
+		var urlToLoad = this.value;
+		if (urlToLoad == "") {
+			initGrid([],fieldList);
+		} else {
+			$.ajax({
+				type: "GET",
+				url: urlToLoad,
+				dataType: "JSON",
+				success: function (data) {
+					initGrid(data,fieldList); 
+				}
+			});
+		}
+	});
+	
 	function initGrid(clients,fields) {
     $("#jsGrid").jsGrid({
         width: "100%",
