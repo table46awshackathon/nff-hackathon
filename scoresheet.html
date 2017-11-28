@@ -67,11 +67,9 @@
 					<button id="addphoto" onclick="uploadFile()">Upload File</button>
 				</div>
 				<select id="chooseCsv">
-					<option value="">No Data</option>
-					<option SELECTED value="https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production/">Large Data Set (API Gateway)</option>
-					<option value="https://s3-us-west-2.amazonaws.com/table46hackathon/small-file.json">Small Data Set (S3)</option>
 				</select>
 				<div id="jsGrid"></div>
+				<a class="btn" id="downloadResults">Download in CSV Format</a>
 			</div>
 		</div>
 	</div>
@@ -114,7 +112,7 @@
 		console.log(data);           // successful response
 		for(i = 0; i < data.Contents.length; i++) {
 			if (data.Contents[i].Key != 'pii/') {
-				var fullPath = "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production?source=" + data.Contents[i].Key;
+				var fullPath = data.Contents[i].Key;
 				$('#chooseCsv').append($('<option>', {
 					value: fullPath,
 					text: data.Contents[i].Key
@@ -145,7 +143,11 @@
 	});
  
 	$("#chooseCsv").change(function() {
-		var urlToLoad = this.value;
+		var urlToLoad = "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production?source=" + this.value;
+		var fileName = this.value;
+		
+		$("#downloadResults").attr('href','https://s3-us-west-2.amazonaws.com/' + uploadBucketName + "/" + fileName);
+		
 		if (urlToLoad == "") {
 			initGrid([],fieldList);
 		} else {
@@ -264,7 +266,11 @@
 		
 			$('#chooseCsv option').last().prop('selected',true);		
 
-			$("#uploadContainer").toggle();			
+			$("#uploadContainer").toggle();
+
+			//https://s3-us-west-2.amazonaws.com/table46hackathondata/pii/SamplePFT500Rows.csv
+			$("#downloadResults").attr('href',"https://s3-us-west-2.amazonaws.com/" + uploadBucketName + "/" + keyPrefix + fileName);
+		
 	  });
 	}
 </script>
