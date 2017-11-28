@@ -270,6 +270,10 @@
 			
 			var fullPath = "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production?source=" + keyPrefix + fileName;
 			
+			var idFilterValue = $('#idFilter').val();
+			if (idFilterValue != "" && idFilterValue != undefined) {
+				fullPath += "&id=" + idFilterValue;
+			}
 			$.ajax({
 				type: "GET",
 				url: fullPath,
