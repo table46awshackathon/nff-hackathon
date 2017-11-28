@@ -37,7 +37,7 @@
                         <a href="scoresheet.html">Scoresheet</a>
                     </li>
 					<li>
-                        <a href="https://us-west-2.quicksight.aws.amazon.com/sn/start">QuickSight</a>
+                        <a href="https://us-west-2.quicksight.aws.amazon.com/sn/dashboards/1504827d-4ce4-4b2d-bc8b-b9690f27a6e2">QuickSight</a>
                     </li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Links<b class="caret"></b></a>
@@ -93,11 +93,37 @@
 	});
 	
 	var uploadBucketName = "table46hackathondata"
+	var keyPrefix = "/pii/";
+	
+
+	
 	var s3 = new AWS.S3({
 	  apiVersion: '2006-03-01',
 	  params: {Bucket: uploadBucketName}
 	});
-
+	
+	var listObjectsParams = {
+		Bucket: uploadBucketName, /* required */
+		Prefix: 'pii/'
+	};
+	
+	
+	var csvObjects = s3.listObjectsV2(listObjectsParams, function(err, data) {
+	  if (err) console.log(err, err.stack); // an error occurred
+	  else {
+		console.log(data);           // successful response
+		for(i = 0; i < data.Contents.length; i++) {
+			if (data.Contents[i].Key != 'pii/') {
+				var fullPath = "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production?source=" + data.Contents[i].Key;
+				$('#chooseCsv').append($('<option>', {
+					value: fullPath,
+					text: data.Contents[i].Key
+				}));
+			}
+		}
+	  }    
+	});
+		
 	var fieldList = [];
 	
 	$.ajax({
@@ -210,14 +236,15 @@
 		var fileName = file.name;
 		
 		s3.upload({
-				Key: fileName,
+				Key: keyPrefix + fileName,
 				Body: file,
 				ACL: 'public-read'
 			}, function(err, data) {
 			if (err) {
-			  return alert('There was an error uploading your photo: ', err.message);
+			  return alert('There was an error uploading your file: ', err.message);
 			}
 			alert('Successfully uploaded file.');
+			window.location.reload(true); 
 	  });
 	}
 </script>
