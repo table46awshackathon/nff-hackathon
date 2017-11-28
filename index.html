@@ -10,7 +10,7 @@
 <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"</script> 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/aws-sdk/2.157.0/aws-sdk.js"></script>
+<script type="text/javascript" src="aws-sdk-2.157.0.min.js"></script>
 
 </head>
 <body>
@@ -34,7 +34,7 @@
                         <a id="loginLink" onclick="showLogin();">Login</a>
                     </li>-->
                     <li>
-                        <a href="scoresheet.html">Scoresheet</a>
+                        <a href="index.html">Scoresheet</a>
                     </li>
 					<li>
                         <a href="https://us-west-2.quicksight.aws.amazon.com/sn/dashboards/1504827d-4ce4-4b2d-bc8b-b9690f27a6e2">QuickSight</a>
@@ -61,13 +61,12 @@
         <div class="row">
             <div class="col-lg-12">
 				<h1>Scoresheet and Calculator</h1>
-				<p>Choose a file to view and edit. You can also <a id="uploadCsv" onclick="showUpload();">upload a new csv</a></p>
+				<p>Choose a file to view: <select id="chooseCsv"></select> or <a id="uploadCsv" onclick="showUpload();">upload a new csv</a> or input an id to filter for only that id: <input type="text" id="idFilter" /><button id="applyFilter">Apply</button></p>
 				<div id="uploadContainer" style="display:none">
 					<input type="file" id="fileupload" />
 					<button id="addphoto" onclick="uploadFile()">Upload File</button>
 				</div>
-				<select id="chooseCsv">
-				</select>
+				
 				<div id="jsGrid"></div>
 				<a class="btn" id="downloadResults">Download in CSV Format</a>
 			</div>
@@ -100,11 +99,24 @@
 	  params: {Bucket: uploadBucketName}
 	});
 	
+	var athena = new AWS.Athena();
+	
 	var listObjectsParams = {
 		Bucket: uploadBucketName, /* required */
 		Prefix: 'pii/'
 	};
+	/*
+	var athenaQuery;
 	
+	var params = {
+	  NamedQueryId: '2a30141c-0b02-406b-909c-2cfc18a7fb6f' 
+	};
+	athena.getNamedQuery(params, function(err, data) {
+	  if (err) console.log(err, err.stack); // an error occurred
+	  else {    console.log(data);           // successful response
+		athenaQuery = data;
+	  }
+	});*/
 	
 	var csvObjects = s3.listObjectsV2(listObjectsParams, function(err, data) {
 	  if (err) console.log(err, err.stack); // an error occurred
@@ -141,10 +153,19 @@
 		},
 		error: function(e) {console.log(e);}
 	});
+	
+	$("#applyFilter").click(function() {
+		$( "#chooseCsv" ).trigger( "change" );
+	});
  
 	$("#chooseCsv").change(function() {
 		var urlToLoad = "https://3dq3wh5kyc.execute-api.us-west-2.amazonaws.com/Production?source=" + this.value;
 		var fileName = this.value;
+		
+		var idFilterValue = $('#idFilter').val();
+		if (idFilterValue != "" && idFilterValue != undefined) {
+			urlToLoad += "&id=" + idFilterValue;
+		}
 		
 		$("#downloadResults").attr('href','https://s3-us-west-2.amazonaws.com/' + uploadBucketName + "/" + fileName);
 		
